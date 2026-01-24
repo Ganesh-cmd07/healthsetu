@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Health-Setu (The AI Healthcare Grid)",
+  "description": "An intelligent healthcare ecosystem featuring AI prescription decoding, specialized women's health tracking (Fem-Sync), smart hospital management, and national drug safety monitoring.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
