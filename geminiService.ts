@@ -2,7 +2,13 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { PrescriptionData, MigraineRiskResponse, MoodAnalysisResponse } from "./types";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+const getAI = () => {
+  if (!ai && process.env.API_KEY) {
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  }
+  return ai;
+};
 
 export const decodePrescription = async (): Promise<PrescriptionData> => {
   await new Promise(resolve => setTimeout(resolve, 2000));
@@ -17,10 +23,14 @@ export const decodePrescription = async (): Promise<PrescriptionData> => {
   };
 };
 
-export const chatWithAugust = async (userMessage: string, cycleDay: number, history: {role: 'user' | 'model', parts: {text: string}[]}[]) => {
+export const chatWithAugust = async (userMessage: string, cycleDay: number, history: { role: 'user' | 'model', parts: { text: string }[] }[]) => {
   try {
-    const response = await ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+    const client = getAI();
+    if (!client) {
+      return "I'm currently offline because no API key is configured. Please add your Gemini API key to .env.local to enable AI responses.";
+    }
+    const response = await client.models.generateContent({
+      model: 'gemini-2.0-flash',
       contents: [
         ...history,
         { role: 'user', parts: [{ text: userMessage }] }
